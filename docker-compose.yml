@@ -1,0 +1,38 @@
+version: "3"
+services:
+  postgres:
+    container_name: pg-typeorm
+    image: postgres:12
+    restart: always
+    environment: 
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=rh-dev
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+  api:
+    container_name: api-typeorm
+    image: node:12
+    working_dir: /usr/app/rh-dev
+    restart: always
+    command: bash -c "npm install --only=prod && npm run start"
+    environment:
+      - TYPEORM_CONNECTION=postgres
+      - TYPEORM_URL=postgresql://postgres:password@postgres:5432/rh-dev
+      - TYPEORM_LOGGING=false
+      - TYPEORM_SYNCHRONIZE=true
+      - TYPEORM_ENTITIES=dist/entity/**/*.js
+      - TYPEORM_ENTITIES_DIR=dist/entity
+      - TYPEORM_MIGRATIONS=dist/migration/**/*.js
+      - TYPEORM_MIGRATIONS_DIR=dist/migration
+      - TYPEORM_MIGRATIONS_RUN=true
+      - TYPEORM_SUBSCRIBERS=dist/subscriber/**/*.js
+      - TYPEORM_SUBSCRIBERS_DIR=dist/subscriber
+    volumes:
+      - ./dist/:/usr/app/rh-dev/dist/
+      - ./package.json:/usr/app/rh-dev/package.json
+    ports:
+      - "7777:7777"
+    links:
+      - postgres
