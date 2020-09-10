@@ -1,3 +1,4 @@
 export default {
-  jwtSecret: "@QEGTUI",
+  port: process.env.PORT || 7777,
+  jwtSecret: "@QEGTUI"
 };
