@@ -13,7 +13,7 @@ class UserController {
     });
 
     // Send the users object
-    response.send(users);
+    response.send({ users });
   };
 
   static getOneById = async (request: Request, response: Response) => {
@@ -27,9 +27,9 @@ class UserController {
         select: ["id", "username", "role"], //We don't want to send the password on response
       });
 
-      response.status(200).send(user);
+      response.status(200).send({ user });
     } catch (error) {
-      response.status(404).send("User not found");
+      response.status(404).send({ error: "User not found" });
     }
   };
 
@@ -56,11 +56,11 @@ class UserController {
     try {
       await userRepository.save(user);
     } catch (error) {
-      response.status(409).send("username already in use");
+      response.status(409).send({ error: "username already in use" });
     }
 
     // If all ok, send 201 response
-    response.status(201).send("User created");
+    response.status(201).send({ message: "User created" });
   };
 
   static editUser = async (request: Request, response: Response) => {
@@ -77,7 +77,7 @@ class UserController {
       user = await userRepository.findOneOrFail(id);
     } catch (error) {
       // If not found, send a 404 response
-      response.status(404).send("User not found");
+      response.status(404).send({ error: "User not found" });
       return;
     }
 
@@ -94,7 +94,7 @@ class UserController {
     try {
       await userRepository.save(user);
     } catch (error) {
-      response.status(409).send("username already in use");
+      response.status(409).send({ error: "username already in use" });
       return;
     }
     response.status(204).send();
@@ -109,7 +109,7 @@ class UserController {
     try {
       user = await userRepository.findOneOrFail(id);
     } catch (error) {
-      response.status(404).send("User not found");
+      response.status(404).send({ error: "User not found" });
       return;
     }
 
